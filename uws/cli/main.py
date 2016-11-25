@@ -1,3 +1,6 @@
+from __future__ import print_function
+from __future__ import absolute_import
+from builtins import str
 import getpass
 import sys
 
@@ -5,7 +8,7 @@ from functools import wraps
 import texttable as tt
 from uws.lib.terminalsize import terminalsize as console
 
-import cli_parser
+from . import cli_parser
 from uws import UWS
 
 debug = False
@@ -18,11 +21,11 @@ def handle_error(handler):
             return handler(self, *args, **kwargs)
         except UWS.UWSError as e:
             if not debug:
-                print "An error occurred:\n   %s" % e.msg
+                print("An error occurred:\n   %s" % e.msg)
                 return
             else:
-                print "An error occurred:\n   %s" % e.msg
-                print e.raw
+                print("An error occurred:\n   %s" % e.msg)
+                print(e.raw)
                 raise
     return handle
 
@@ -98,9 +101,9 @@ def list_jobs(url, user_name, password, phases, after=None, last=None):
     table.set_cols_dtype(dtypes)  # ['t', 't', 't', 't', 't'])
     table.add_rows(rows)
 
-    print "List of jobs on UWS service for user: '%s'" % user_name
-    print table.draw()
-    print "%d jobs listed." % (len(rows) - 1)
+    print("List of jobs on UWS service for user: '%s'" % user_name)
+    print(table.draw())
+    print("%d jobs listed." % (len(rows) - 1))
 
 
 def _register_job_reference_for_table(rows, jobref):
@@ -147,7 +150,7 @@ def show_job(url, user_name, password, id, wait, phase):
     job = uws_client.get_job(id, wait, phase)
 
     if wait and job.version != "1.1":
-        print "Warning: Wait keyword is (probably) not supported by the server's UWS version %s (need 1.1). Server will probably ignore wait and return immediately." % job.version
+        print("Warning: Wait keyword is (probably) not supported by the server's UWS version %s (need 1.1). Server will probably ignore wait and return immediately." % job.version)
 
     _print_job(job)
 
@@ -175,12 +178,12 @@ def new_job(url, user_name, password, parameters={}, run=False):
 
     _print_job(job)
 
-    print "\n"
-    print "*" * (console_width - 1)
-    print "You can access this job with the id:\n"
-    print "Job ID: %s" % job.job_id
-    print "Command: uws -H %s --user %s --password YOUR_PASSWORD_HERE job show %s" % (url, user_name, job.job_id)
-    print "*" * (console_width - 1)
+    print("\n")
+    print("*" * (console_width - 1))
+    print("You can access this job with the id:\n")
+    print("Job ID: %s" % job.job_id)
+    print("Command: uws -H %s --user %s --password YOUR_PASSWORD_HERE job show %s" % (url, user_name, job.job_id))
+    print("*" * (console_width - 1))
 
 
 @handle_error
@@ -220,7 +223,7 @@ def delete_job(url, user_name, password, id):
     success = uws_client.delete_job(id)
 
     if success:
-        print "Job %s successfully deleted!" % (id)
+        print("Job %s successfully deleted!" % (id))
 
 
 @handle_error
@@ -240,10 +243,10 @@ def results_job(url, user_name, password, id, result_id, user_file_base):
     # if there are multiple result sets returned: force user to decide which ones to use?
     # or maybe rather let the service define a standard result? but how?
     if len(job.results) > 1 and not result_id:
-        print 'There are multiple results for this job, all of them are downloaded now.'
-        print 'If this is not what you intended, please specify the id of your desired result like this: '
-        print '\nuws job results ID RESULTID\n'
-        print 'For RESULTID, you can choose from: ', ','.join([result.id for result in job.results])
+        print('There are multiple results for this job, all of them are downloaded now.')
+        print('If this is not what you intended, please specify the id of your desired result like this: ')
+        print('\nuws job results ID RESULTID\n')
+        print('For RESULTID, you can choose from: ', ','.join([result.id for result in job.results]))
 
     # set file base name to job_id or tablename (if available) or user provided file_base
     file_base = job.job_id
@@ -263,18 +266,18 @@ def results_job(url, user_name, password, id, result_id, user_file_base):
 
             url = str(result.reference)
 
-            print "Downloading %s into file '%s'" % (result.id, filename)
+            print("Downloading %s into file '%s'" % (result.id, filename))
             uws_client.connection.download_file(url, user_name, password, filename, callback=print_progress)
-            print ""
-            print "Finished downloading file '%s'\n" % (filename)
+            print("")
+            print("Finished downloading file '%s'\n" % (filename))
             retrieved = True
 
     if not retrieved:
         if result_id:
-            print "Result Id '%s' not available. Use 'uws job show %s' for a list of available results." % (result_id, job.job_id)
+            print("Result Id '%s' not available. Use 'uws job show %s' for a list of available results." % (result_id, job.job_id))
         else:
-            print "The job with id '%s' has no results." % (job.job_id)
-            print "Check with 'uws job show %s' the details, the job results may have been deleted." % (job.job_id)
+            print("The job with id '%s' has no results." % (job.job_id))
+            print("Check with 'uws job show %s' the details, the job results may have been deleted." % (job.job_id))
 
 
 def _print_job(job):
@@ -313,7 +316,7 @@ def _print_job(job):
         pass
 
     for info in job.job_info:
-        rows.append(["Job info", unicode(info)])
+        rows.append(["Job info", str(info)])
 
     (console_width, console_height) = console.get_terminal_size()
 
@@ -325,7 +328,7 @@ def _print_job(job):
     table.set_cols_dtype(['t', 't'])
     table.set_cols_width([max_field_len, console_width - max_field_len - 4])
     table.add_rows(rows)
-    print table.draw()
+    print(table.draw())
 
 
 # check validity of wait and phases:
@@ -392,7 +395,7 @@ def main():
 
     if arguments.P:
         if arguments.password:
-            print "Error: You cannot use -P and --password together!"
+            print("Error: You cannot use -P and --password together!")
             sys.exit(1)
 
         arguments.password = getpass.getpass("Enter password: ")
@@ -455,7 +458,7 @@ def main():
         elif arguments.job_command == "results":
             results_job(arguments.host, arguments.user, arguments.password, arguments.id, arguments.result_id, arguments.file_base)
         else:
-            print "Error: Unknown command %s\n" % (arguments.job_command)
+            print("Error: Unknown command %s\n" % (arguments.job_command))
 
 if __name__ == '__main__':
     main()

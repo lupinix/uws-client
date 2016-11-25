@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 #source: https://gist.github.com/jtriley/1108174
+from __future__ import print_function
 import os
 import shlex
 import struct
@@ -25,7 +26,7 @@ def get_terminal_size():
     if current_os in ['Linux', 'Darwin'] or current_os.startswith('CYGWIN'):
         tuple_xy = _get_terminal_size_linux()
     if tuple_xy is None:
-        print "default"
+        print("default")
         tuple_xy = (80, 25)      # default value
     return tuple_xy
  
@@ -88,4 +89,4 @@ def _get_terminal_size_linux():
  
 if __name__ == "__main__":
     sizex, sizey = get_terminal_size()
-    print  'width =', sizex, 'height =', sizey
+    print('width =', sizex, 'height =', sizey)

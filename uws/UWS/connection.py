@@ -1,10 +1,13 @@
+from future import standard_library
+standard_library.install_aliases()
+from builtins import bytes, object
 # -*- coding: utf-8 -*-
-import httplib
-import urllib
-import urllib2
+import http.client
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
 import base64
 
-from urlparse import urlparse
+from urllib.parse import urlparse
 
 
 class Connection(object):
@@ -12,8 +15,8 @@ class Connection(object):
         self._set_url(url)
 
         if user is not None and password is not None:
-            self.auth_string = base64.encodestring('%s:%s' % (user, password))
-            self.auth_string = self.auth_string.replace('\n', '')
+            self.auth_string = base64.encodestring(b'%s:%s' % (user.encode(), password.encode()))
+            self.auth_string = self.auth_string.replace(b'\n', b'')
             self.headers = {"Authorization": "Basic %s" % self.auth_string}
         else:
             self.headers = {}
@@ -32,9 +35,9 @@ class Connection(object):
         self.base_path = url_parsed.path
 
         if url_parsed.scheme == "http":
-            self.connection = httplib.HTTPConnection(self.clean_url)
+            self.connection = http.client.HTTPConnection(self.clean_url)
         elif url_parsed.scheme == "https":
-            self.connection = httplib.HTTPSConnection(self.clean_url)
+            self.connection = http.client.HTTPSConnection(self.clean_url)
         else:
             raise RuntimeError('Wrong protocol specified')
 
@@ -46,7 +49,7 @@ class Connection(object):
             destination_url = self.base_path
 
         if params:
-            params = urllib.urlencode(params, True)
+            params = urllib.parse.urlencode(params, True)
             self.connection.request("GET", destination_url+'?'+params, headers=self.headers)
         else:
             self.connection.request("GET", destination_url, headers=self.headers)
@@ -83,7 +86,7 @@ class Connection(object):
         return response
 
     def post(self, path, args):
-        params = urllib.urlencode(args)
+        params = urllib.parse.urlencode(args)
 
         if path:
             destination_url = self.base_path + "/" + path
@@ -172,10 +175,10 @@ class Connection(object):
         return response
 
     def download_file(self, url, usr, pwd, file_name, chunk_size_kb=1024, callback=None):
-        request = urllib2.Request(url)
+        request = urllib.request.Request(url)
         if hasattr(self, 'auth_string'):
             request.add_header("Authorization", "Basic %s" % self.auth_string)
-        handler = urllib2.urlopen(request)
+        handler = urllib.request.urlopen(request)
 
         chunk_size = int(chunk_size_kb * 1024)
 

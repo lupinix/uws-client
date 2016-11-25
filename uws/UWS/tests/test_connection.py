@@ -1,3 +1,5 @@
+from future import standard_library
+standard_library.install_aliases()
 # -*- coding: utf-8 -*-
 import unittest
 
@@ -16,7 +18,7 @@ class ConnectionTest(unittest.TestCase):
         self.assertDictEqual(connection.headers, {'Authorization': 'Basic YWRtaW46YWRtaW4='})
 
     def testSetURLHTTP(self):
-        import httplib
+        import http.client
 
         connection = UWS.connection.Connection(
             "http://www.example.com/uws/",
@@ -27,10 +29,10 @@ class ConnectionTest(unittest.TestCase):
         self.assertEqual(connection.url, "http://www.example.com/uws")
         self.assertEqual(connection.clean_url, "www.example.com")
         self.assertEqual(connection.base_path, "/uws")
-        self.assertIsInstance(connection.connection, httplib.HTTPConnection)
+        self.assertIsInstance(connection.connection, http.client.HTTPConnection)
 
     def testSetURLHTTPS(self):
-        import httplib
+        import http.client
 
         connection = UWS.connection.Connection(
             "https://www.example.com/uws/",
@@ -41,4 +43,4 @@ class ConnectionTest(unittest.TestCase):
         self.assertEqual(connection.url, "https://www.example.com/uws")
         self.assertEqual(connection.clean_url, "www.example.com")
         self.assertEqual(connection.base_path, "/uws")
-        self.assertIsInstance(connection.connection, httplib.HTTPSConnection)
+        self.assertIsInstance(connection.connection, http.client.HTTPSConnection)

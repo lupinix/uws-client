@@ -1,3 +1,6 @@
+from builtins import str
+from past.builtins import basestring
+from builtins import object
 # -*- coding: utf-8 -*-
 from lxml import etree as et
 
@@ -9,7 +12,7 @@ xlink_namespace = "http://www.w3.org/1999/xlink"
 class UWS1Flavour(object):
     def __init__(self, namespaces=None):
 
-        if uws_1_namespace not in namespaces.values():
+        if uws_1_namespace not in list(namespaces.values()):
             raise RuntimeError("No supported UWS namespace found in xml-response, cannot parse xml.")
 
         # prepend each element's name with the correct uws-namespace
@@ -108,11 +111,11 @@ class Jobs(BaseUWSModel):
     def __unicode__(self):
         str = ""
         for job in self.job_reference:
-            str += unicode(job) + "\n"
+            str += str(job) + "\n"
         return str
 
     def __str__(self):
-        return unicode(self).encode('utf-8')
+        return str(self).encode('utf-8')
 
     def add_job(self, id=None, href=None, phase=None, job=None):
         if job is not None:
@@ -161,12 +164,12 @@ class JobRef(BaseUWSModel):
 
     def __unicode__(self):
         if self.creationTime is not None:
-            return "Job '%s' in phase '%s' created at '%s' - %s" % (self.id, ', '.join(self.phase), self.creationTime, unicode(self.reference))
+            return "Job '%s' in phase '%s' created at '%s' - %s" % (self.id, ', '.join(self.phase), self.creationTime, str(self.reference))
         else:
-            return "Job '%s' in phase '%s' - %s" % (self.id, ', '.join(self.phase), unicode(self.reference))
+            return "Job '%s' in phase '%s' - %s" % (self.id, ', '.join(self.phase), str(self.reference))
 
     def __str__(self):
-        return unicode(self).encode('utf-8')
+        return str(self).encode('utf-8')
 
 
 class Reference(BaseUWSModel):
@@ -178,7 +181,7 @@ class Reference(BaseUWSModel):
 
         if xml_node is not None:
             # check that namespace for xlink really exists
-            if xlink_namespace not in xml_namespace.values():
+            if xlink_namespace not in list(xml_namespace.values()):
                 raise RuntimeError("No supported xlink namespace found in xml-response, cannot parse xml.")
 
             qualifiedname_type = et.QName(xlink_namespace, "type")
@@ -193,7 +196,7 @@ class Reference(BaseUWSModel):
         return self.href
 
     def __str__(self):
-        return unicode(self).encode('utf-8')
+        return str(self).encode('utf-8')
 
 
 class Job(BaseUWSModel):
@@ -274,22 +277,22 @@ class Job(BaseUWSModel):
 
         str += "Parameters :\n"
         for param in self.parameters:
-            str += "%s\n" % unicode(param)
+            str += "%s\n" % str(param)
 
         str += "Results :\n"
         for res in self.results:
-            str += "%s\n" % unicode(res)
+            str += "%s\n" % str(res)
 
-        str += "errorSummary :\n %s\n" % unicode(self.error_summary)
+        str += "errorSummary :\n %s\n" % str(self.error_summary)
 
         str += "jobInfo :\n"
         for info in self.job_info:
-            str += "%s\n" % unicode(info)
+            str += "%s\n" % str(info)
 
         return str
 
     def __str__(self):
-        return unicode(self).encode('utf-8')
+        return str(self).encode('utf-8')
 
     def add_parameter(self, id=None, by_reference=False, is_post=False, value=None, parameter=None):
         if not parameter:
@@ -349,7 +352,7 @@ class Parameter(BaseUWSModel):
         return "Parameter id '%s' byRef: %s is_post: %s - value: %s" % (self.id, self.by_reference, self.is_post, self.value)
 
     def __str__(self):
-        return unicode(self).encode('utf-8')
+        return str(self).encode('utf-8')
 
 
 class Result(BaseUWSModel):
@@ -371,10 +374,10 @@ class Result(BaseUWSModel):
                 raise RuntimeError("Malformated reference given in result id: %s" % id)
 
     def __unicode__(self):
-        return "Result id '%s' reference: %s" % (self.id, unicode(self.reference))
+        return "Result id '%s' reference: %s" % (self.id, str(self.reference))
 
     def __str__(self):
-        return unicode(self).encode('utf-8')
+        return str(self).encode('utf-8')
 
 
 class ErrorSummary(BaseUWSModel):
@@ -405,4 +408,4 @@ class ErrorSummary(BaseUWSModel):
         return "Error Summary - type '%s' hasDetail: %s - message: %s" % (self.type, self.has_detail, "\n".join(self.messages))
 
     def __str__(self):
-        return unicode(self).encode('utf-8')
+        return str(self).encode('utf-8')

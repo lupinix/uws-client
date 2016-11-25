@@ -7,7 +7,8 @@ install_requires = [
     "texttable>=0.8.1",
     "lxml",
     "python-dateutil",
-    "pytz"
+    "pytz",
+    "future"
 ]
 
 version = "1.1.11"
